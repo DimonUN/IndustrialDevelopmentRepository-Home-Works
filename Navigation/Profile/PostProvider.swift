@@ -1,4 +1,5 @@
 import Foundation
+import StorageService
 
 struct PostProvider {
     static func get() -> [Post] {

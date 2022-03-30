@@ -1,16 +1,18 @@
 import UIKit
 import StorageService
+import iOSIntPackage
 
 class ProfileViewController: UIViewController {
     
-    
-    //MARK: Setting properties
+//MARK: -Setting properties
     
     fileprivate enum CellReuseIdentifiers: String {
         case header
         case photos
         case posts
     }
+    
+    private let processor = ImageProcessor()
     
     fileprivate var recognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer()
@@ -54,7 +56,7 @@ class ProfileViewController: UIViewController {
     }()
     
     
-    //MARK: Setting methods
+//MARK: -Setting methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -85,6 +87,9 @@ class ProfileViewController: UIViewController {
         
         self.tableView.isScrollEnabled = false
         self.tableView.isUserInteractionEnabled = false
+        
+        
+        
         
         UIView.animateKeyframes(
                 withDuration: 0.8,
@@ -123,6 +128,8 @@ class ProfileViewController: UIViewController {
     @objc func closeAvatarImage() {
         self.tableView.isUserInteractionEnabled = true
         self.tableView.isScrollEnabled = true
+        
+        
         
         UIView.animateKeyframes(
             withDuration: 0.8,
@@ -212,7 +219,7 @@ class ProfileViewController: UIViewController {
 }
 
 
-//MARK: extension UITableViewDataSource
+//MARK: -extension UITableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource {
     
@@ -242,16 +249,42 @@ extension ProfileViewController: UITableViewDataSource {
             
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: CellReuseIdentifiers.posts.rawValue, for: indexPath) as! PostTableViewCell
-            
             let data = arrayOfPost[indexPath.row]
-            cell.update(title: data.title, image: data.image, description: data.description, likes: data.likes, views: data.views)
+            var processedImage = UIImage()
+            
+            
+//MARK: -usage iOSIntPackage functionality (ImageProcessor)
+            
+            if indexPath.row % 2 == 0 {
+                self.processor.processImage(
+                    sourceImage: UIImage(named: data.image)!,
+                    filter: ColorFilter.tonal) {
+                        someImage in
+                        processedImage = someImage ?? UIImage(named: "cat")!
+                }
+            } else if indexPath.row % 3 == 0 {
+                self.processor.processImage(
+                    sourceImage: UIImage(named: data.image)!,
+                    filter: ColorFilter.posterize) {
+                        someImage in
+                        processedImage = someImage ?? UIImage(named: "cat")!
+                    }
+            } else {
+                self.processor.processImage(
+                    sourceImage: UIImage(named: data.image)!,
+                    filter: ColorFilter.fade) {
+                        someImage in
+                        processedImage = someImage ?? UIImage(named: "cat")!
+                    }
+            }
+            cell.update(title: data.title, image: processedImage, description: data.description, likes: data.likes, views: data.views)
             return cell
         }
     }
 }
 
 
-//MARK: extension UITableViewDelegate
+//MARK: -extension UITableViewDelegate
 
 extension ProfileViewController: UITableViewDelegate {
     func numberOfSections(in tableView: UITableView) -> Int {

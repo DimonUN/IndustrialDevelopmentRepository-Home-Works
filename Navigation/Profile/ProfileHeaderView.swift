@@ -1,4 +1,5 @@
 import UIKit
+import SnapKit
 
 class ProfileHeaderView: UIView {
     
@@ -44,6 +45,7 @@ class ProfileHeaderView: UIView {
         let setStatusButton = UIButton()
         setStatusButton.setTitle("Show status", for: .normal)
         setStatusButton.setTitleColor(.white, for: .normal)
+    
         setStatusButton.backgroundColor = .systemBlue
         setStatusButton.layer.cornerRadius = 12.0
         setStatusButton.layer.shadowOffset = CGSize(width: 4, height: 4)
@@ -102,6 +104,7 @@ class ProfileHeaderView: UIView {
         addSubviews(fullNameLabel, setStatusButton, statusLabel, statusTextField, avatarContentView, avatarImageView)
         avatarImageView.isUserInteractionEnabled = true
         
+        
         avatarImageViewLeadingAnchor = avatarImageView.leadingAnchor.constraint(
             equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16)
         avatarImageViewLeadingAnchor?.isActive = true
@@ -118,37 +121,32 @@ class ProfileHeaderView: UIView {
                     equalToConstant: 140)
         avatarImageViewHeightAnchor?.isActive = true
         
-        NSLayoutConstraint.activate([
-            
-            setStatusButton.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            self.safeAreaLayoutGuide.trailingAnchor.constraint(
-                equalTo: setStatusButton.trailingAnchor, constant: 16),
-            setStatusButton.bottomAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
-            setStatusButton.heightAnchor.constraint(
-                equalToConstant: 50),
-            
-            fullNameLabel.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
-            fullNameLabel.topAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 27),
-            
-            statusLabel.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
-            statusLabel.topAnchor.constraint(
-                equalTo: fullNameLabel.bottomAnchor, constant: 30),
-            statusLabel.heightAnchor.constraint(equalToConstant: 15),
-            
-            statusTextField.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
-            statusTextField.topAnchor.constraint(
-                equalTo: statusLabel.bottomAnchor, constant: 10),
-            statusTextField.heightAnchor.constraint(
-                equalToConstant: 40),
-            self.safeAreaLayoutGuide.trailingAnchor.constraint(
-                equalTo: statusTextField.trailingAnchor, constant: 16),
-        ])
+//MARK: -usage SnapKit functionality
+        
+        statusLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(186)
+            make.top.equalTo(fullNameLabel.snp_bottomMargin).offset(30)
+            make.height.equalTo(15)
+        }
+        
+        setStatusButton.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(16)
+            make.trailing.equalToSuperview().offset(-16)
+            make.bottom.equalToSuperview().offset(-10)
+            make.height.equalTo(50)
+        }
+        
+        fullNameLabel.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(186)
+            make.top.equalToSuperview().offset(27)
+        }
+        
+        statusTextField.snp.makeConstraints { make in
+            make.leading.equalToSuperview().offset(186)
+            make.top.equalTo(statusLabel.snp_bottomMargin).offset(10)
+            make.height.equalTo(40)
+            make.trailing.equalToSuperview().offset(-16)
+        }
     }
     
     required init?(coder: NSCoder) {

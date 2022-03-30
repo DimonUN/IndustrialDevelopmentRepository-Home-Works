@@ -1,4 +1,5 @@
 import UIKit
+import StorageService
 
 class ProfileViewController: UIViewController {
     
@@ -22,6 +23,7 @@ class ProfileViewController: UIViewController {
     }()
     
     fileprivate lazy var arrayOfPost: [Post] = PostProvider.get()
+    
 
     fileprivate enum NumbersOfCellsInTableView {
         static let zeroSection: Int = 1

@@ -245,9 +245,15 @@ class LogInViewController: UIViewController {
         loginTextField.resignFirstResponder()
         passwordTextField.resignFirstResponder()
         
-        let profileVC = ProfileViewController()
-        self.navigationController?.pushViewController(profileVC, animated: true)
+//MARK: -Выполнение условий ДЗ
+        #if DEBUG
+        let user = TestUserService()
+        #else
+        let user = CurrentUserService()
+        #endif
         
+        let profileVC = ProfileViewController(userService: user, name: loginTextField.text!)
+        self.navigationController?.pushViewController(profileVC, animated: true)
     }
 }
 

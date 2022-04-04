@@ -21,7 +21,7 @@ class ProfileHeaderView: UIView {
     }()
 
      lazy var avatarImageView: UIImageView = {
-        let avatarImageView = UIImageView(image: UIImage(named: "cat"))
+        let avatarImageView = UIImageView(image: UIImage(named: "logo"))
         avatarImageView.layer.cornerRadius = 70
         avatarImageView.layer.borderWidth = 3
         avatarImageView.layer.borderColor = UIColor.white.cgColor
@@ -33,7 +33,7 @@ class ProfileHeaderView: UIView {
     
     private lazy var fullNameLabel: UILabel = {
         let fullNameLabel = UILabel()
-        fullNameLabel.text = "Hipster cat"
+        fullNameLabel.text = "Unknown name"
         fullNameLabel.font = UIFont.boldSystemFont(ofSize: 18)
         fullNameLabel.textColor = .black
         fullNameLabel.toAutoLayout()
@@ -81,7 +81,7 @@ class ProfileHeaderView: UIView {
     
     private lazy var statusLabel: UILabel = {
         let statusLabel = UILabel()
-        statusLabel.text = "Waiting for something"
+        statusLabel.text = "Some status"
         statusLabel.font = UIFont.systemFont(ofSize: 14)
         statusLabel.textColor = .gray
         statusLabel.toAutoLayout()
@@ -96,6 +96,12 @@ class ProfileHeaderView: UIView {
     @objc func buttonPressed(sender: UIButton) {
         statusLabel.text = statusText
         print(statusLabel.text ?? "Unknown text")
+    }
+    
+    func setupData(userName: String, avatarImage: UIImage, userStatus: String) {
+        self.fullNameLabel.text = userName
+        self.avatarImageView.image = avatarImage
+        self.statusLabel.text = userStatus
     }
     
     fileprivate func setupUI() {

@@ -2,28 +2,41 @@ import UIKit
 
 class ProfileViewController: UIViewController {
     
+//MARK: -Выполнение условий ДЗ
+    private let userService: UserService
+    private let name: String
+    
+    init(userService: UserService, name: String) {
+        self.userService = userService
+        self.name = name
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     
     //MARK: Setting properties
-    
-    fileprivate enum CellReuseIdentifiers: String {
+    private enum CellReuseIdentifiers: String {
         case header
         case photos
         case posts
     }
     
-    fileprivate var recognizer: UITapGestureRecognizer = {
+    private var recognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer()
         return recognizer
     }()
     
-    fileprivate var animator: UIViewPropertyAnimator = {
+    private var animator: UIViewPropertyAnimator = {
         let animator = UIViewPropertyAnimator()
         return animator
     }()
     
-    fileprivate lazy var arrayOfPost: [Post] = PostProvider.get()
+    private lazy var arrayOfPost: [Post] = PostProvider.get()
 
-    fileprivate enum NumbersOfCellsInTableView {
+    private enum NumbersOfCellsInTableView {
         static let zeroSection: Int = 1
         static let firstSection: Int = 1
     }
@@ -35,13 +48,13 @@ class ProfileViewController: UIViewController {
         return tableView
     }()
     
-    fileprivate var header: ProfileHeaderView = {
+    private var header: ProfileHeaderView = {
         let header = ProfileHeaderView()
         header.alpha = 0
         return header
     }()
     
-    fileprivate lazy var closeLabel: UIButton = {
+    private lazy var closeLabel: UIButton = {
         let closeLabel = UIButton()
         closeLabel.toAutoLayout()
         closeLabel.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -158,7 +171,7 @@ class ProfileViewController: UIViewController {
     }
     
     
-    fileprivate func setupLayout() {
+    private func setupLayout() {
         self.view.addSubview(self.closeLabel)
         
         avatarContentViewLeadingAnchor = self.header.avatarContentView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor)
@@ -179,14 +192,19 @@ class ProfileViewController: UIViewController {
     }
 
     
-    fileprivate func setupHeaderTableView() {
+    private func setupHeaderTableView() {
         self.header = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 220))
-        header.avatarImageView.addGestureRecognizer(recognizer)
+       
+//MARK: -Выполнение условий ДЗ
+        let user = userService.nameVerification(userName: name)
+        self.header.setupData(userName: user.name, avatarImage: user.avatarImage, userStatus: user.status)
+        
+        self.header.avatarImageView.addGestureRecognizer(recognizer)
         self.tableView.tableHeaderView = header
         self.recognizer.addTarget(self, action: #selector(tapGesture(_:)))
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         view.backgroundColor = .white
         view.addSubviews(tableView)
         NSLayoutConstraint.activate([

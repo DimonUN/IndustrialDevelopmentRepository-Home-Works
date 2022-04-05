@@ -82,8 +82,9 @@ class PostTableViewCell: UITableViewCell {
         ])
     }
     
-    public func update(title: String, image: String, description: String, likes: Int, views: Int) {
-        imagePostView.image = UIImage(named: image)
+    public func update(title: String, image: UIImage, description: String, likes: Int, views: Int) {
+        
+        imagePostView.image = image
         textPostLabel.text = description
         likesLabel.text = "Likes: \(likes)"
         viewsLabel.text = "Views: \(views)"

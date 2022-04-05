@@ -260,21 +260,21 @@ extension ProfileViewController: UITableViewDataSource {
                     sourceImage: UIImage(named: data.image)!,
                     filter: ColorFilter.tonal) {
                         someImage in
-                        processedImage = someImage ?? UIImage(named: "cat")!
+                        processedImage = someImage ?? UIImage()
                 }
             } else if indexPath.row % 3 == 0 {
                 self.processor.processImage(
                     sourceImage: UIImage(named: data.image)!,
                     filter: ColorFilter.posterize) {
                         someImage in
-                        processedImage = someImage ?? UIImage(named: "cat")!
+                        processedImage = someImage ?? UIImage()
                     }
             } else {
                 self.processor.processImage(
                     sourceImage: UIImage(named: data.image)!,
                     filter: ColorFilter.fade) {
                         someImage in
-                        processedImage = someImage ?? UIImage(named: "cat")!
+                        processedImage = someImage ?? UIImage()
                     }
             }
             cell.update(title: data.title, image: processedImage, description: data.description, likes: data.likes, views: data.views)

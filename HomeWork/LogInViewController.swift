@@ -6,9 +6,18 @@ class LogInViewController: UIViewController {
         print("Did catch action")
     }
     
-
-    //MARK: Setting properties
+    //MARK: -Выполнение условий ДЗ
+    var delegate: LogInViewControllerDelegate?
+    init(delegate: LogInViewControllerDelegate) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
     
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+//MARK: Setting properties
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = true
@@ -127,8 +136,7 @@ class LogInViewController: UIViewController {
     }()
 
     
-    //MARK: Setting methods
-    
+//MARK: Setting methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
@@ -138,7 +146,6 @@ class LogInViewController: UIViewController {
     fileprivate func setupUI() {
         let recognizer = UITapGestureRecognizer()
         recognizer.addTarget(self, action: #selector(tapGesture))
-        
         logoContentView.addGestureRecognizer(recognizer)
         
         view.backgroundColor = .red
@@ -245,9 +252,28 @@ class LogInViewController: UIViewController {
         loginTextField.resignFirstResponder()
         passwordTextField.resignFirstResponder()
         
-        let profileVC = ProfileViewController()
-        self.navigationController?.pushViewController(profileVC, animated: true)
+        //MARK: -Выполнение условий ДЗ
+        let alert = UIAlertController(title: nil, message: "Неверно введен логин или пароль", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: .default) {okAction in
+            self.loginTextField.text = nil
+            self.passwordTextField.text = nil
+        }
+        alert.addAction(okAction)
         
+        guard delegate != nil else {return}
+        
+        let login = loginTextField.text?.hash ?? 0
+        let password = passwordTextField.text?.hash ?? 0
+        
+        let result = delegate?.verification(lgn: login, pswd: password)
+        
+        switch result {
+        case true:
+            let profileVC = ProfileViewController()
+            self.navigationController?.pushViewController(profileVC, animated: true)
+        default:
+            present(alert, animated: true, completion: nil)
+        }
     }
 }
 

@@ -1,5 +1,24 @@
 import UIKit
 
+class Probniy {
+    var messege = "GOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGOGO"
+    
+    var delegate: ProbniyDelegate?
+//    func go() {
+//        print("GOGOGOGO")
+//    }
+}
+
+protocol ProbniyDelegate: AnyObject {
+    func sendMessage(str: String)
+}
+
+extension ProfileViewController: ProbniyDelegate {
+    func sendMessage(str: String) {
+        print(str)
+    }
+}
+
 class ProfileViewController: UIViewController {
     
     
@@ -59,6 +78,10 @@ class ProfileViewController: UIViewController {
         setupUI()
         setupHeaderTableView()
         setupLayout()
+        let probniy = Probniy()
+        probniy.delegate = self
+        
+        self.sendMessage(str: probniy.messege)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -115,6 +138,7 @@ class ProfileViewController: UIViewController {
                 completion: { finished in
 
                 })
+        
     }
     
     

@@ -9,12 +9,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
         window = UIWindow()
-        
         let tabBarController = UITabBarController()
         
-        let logInVC = LogInViewController()
-        logInVC.tabBarItem = UITabBarItem(title: "Profile", image: .init(systemName: "person.fill"), tag: 0)
         
+        //MARK: -Выполнение условий ДЗ
+        let factory = MyLoginFactory()
+        let logInVC = LogInViewController(delegate: factory.createInspector())
+        
+        
+        logInVC.tabBarItem = UITabBarItem(title: "Profile", image: .init(systemName: "person.fill"), tag: 0)
         let feedVC = FeedViewController()
         feedVC.tabBarItem = UITabBarItem(title: "Feed", image: .init(systemName: "house.fill"), tag: 1)
         

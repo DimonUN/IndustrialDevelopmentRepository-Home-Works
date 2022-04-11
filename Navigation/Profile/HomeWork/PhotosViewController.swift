@@ -34,6 +34,7 @@ class PhotosViewController: UIViewController {
 //MARK: -Выполнение ДЗ
     override func viewWillDisappear(_ animated: Bool) {
         facade.removeSubscription(for: self)
+        facade.rechargeImageLibrary()
     }
     
     

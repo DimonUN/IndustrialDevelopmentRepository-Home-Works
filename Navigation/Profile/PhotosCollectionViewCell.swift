@@ -33,8 +33,8 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         
     }
     
-    public func setup(name: String){
-        image.image = UIImage(named: name)
+    public func setup(image: UIImage) {
+        self.image.image = image
     }
 }
 

@@ -1,10 +1,14 @@
 import UIKit
+import iOSIntPackage
 
 class PhotosViewController: UIViewController {
     
-    lazy var arrayOfPhotos: [String] = PhotosProvider.get()
+//MARK: -Выполнение ДЗ
+    private let facade = ImagePublisherFacade()
     
-    fileprivate enum CollectionReuseIdentifiers: String {
+    private var imageFromPublisher: [UIImage] = []
+    
+    private enum CollectionReuseIdentifiers: String {
             case photos
         }
     
@@ -27,21 +31,36 @@ class PhotosViewController: UIViewController {
         navigationController?.navigationBar.isHidden = false
     }
     
+//MARK: -Выполнение ДЗ
+    override func viewWillDisappear(_ animated: Bool) {
+        facade.removeSubscription(for: self)
+    }
+    
+    
+//MARK: -Выполнение ДЗ
+    fileprivate func setupFromFacade() {
+        let arrayOfImages = PhotosProvider()
+        facade.subscribe(self)
+        facade.addImagesWithTimer(time: 0.1, repeat: 30, userImages: arrayOfImages.getImages())
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
+        setupCollection()
+        setupFromFacade()
+    }
+    
+    fileprivate func setupCollection() {
+        self.collectionView.dataSource = self
+        self.collectionView.delegate = self
+        collectionView.register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue)
     }
     
     fileprivate func setupUI() {
         self.view.backgroundColor = .white
         self.title = "Photo Gallery"
-        
         self.view.addSubview(collectionView)
-        
-        self.collectionView.dataSource = self
-        self.collectionView.delegate = self
-        
-        collectionView.register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue)
         
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
@@ -52,16 +71,40 @@ class PhotosViewController: UIViewController {
     }
 }
 
+extension PhotosProvider {
+    func getImages() -> [UIImage] {
+        let arrayOfString = PhotosProvider.get()
+        var arrayOfImages: [UIImage] = []
+        for name in arrayOfString {
+            arrayOfImages.append(UIImage(named: name) ?? UIImage())
+        }
+        return arrayOfImages
+    }
+}
+
+
+//MARK: -Выполнение ДЗ
+extension PhotosViewController: ImageLibrarySubscriber {
+    func receive(images: [UIImage]) {
+        self.imageFromPublisher = images
+        collectionView.reloadData()
+    }
+}
+
+
+//MARK: -Выполнение ДЗ
 extension PhotosViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        arrayOfPhotos.count
+        imageFromPublisher.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue, for: indexPath) as! PhotosCollectionViewCell
-        let data = arrayOfPhotos[indexPath.row]
-        cell.setup(name: data)
+        
+        let data = imageFromPublisher[indexPath.row]
+        
+        cell.setup(image: data)
         return cell
     }
 }

@@ -1,8 +1,8 @@
 import UIKit
 
-class PhotosTableViewCell: UITableViewCell {
+final class PhotosTableViewCell: UITableViewCell {
     
-    fileprivate enum CollectionReuseIdentifiers: String {
+    private enum CollectionReuseIdentifiers: String {
             case photos
         }
     
@@ -14,14 +14,15 @@ class PhotosTableViewCell: UITableViewCell {
     
     lazy var arrayOfPhotos: [String] = PhotosProvider.get()
     
-    private var collectionView: UICollectionView = {
+    private lazy var collectionView: UICollectionView = {
         let viewLayout = UICollectionViewFlowLayout()
         viewLayout.scrollDirection = .horizontal
-        var collectionView = UICollectionView(frame: .zero,
-            collectionViewLayout: viewLayout)
+        var collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: viewLayout
+        )
         collectionView.toAutoLayout()
         collectionView.backgroundColor = .systemGray5
-
         return collectionView
     }()
     
@@ -32,12 +33,12 @@ class PhotosTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(collectionView)
-        
+
         collectionView.dataSource = self
         collectionView.delegate = self
-        
+
         collectionView.register(PhotogridCollectionViewCell.self, forCellWithReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue)
-        
+
         NSLayoutConstraint.activate([
             collectionView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             collectionView.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -55,17 +56,18 @@ extension PhotosTableViewCell: UICollectionViewDataSource {
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue, for: indexPath) as! PhotogridCollectionViewCell
-      
+        let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue,
+            for: indexPath
+        ) as! PhotogridCollectionViewCell
+
         let data = arrayOfPhotos[indexPath.row]
         cell.setup(name: data)
         return cell
     }
 }
 
-
 extension PhotosTableViewCell: UICollectionViewDelegateFlowLayout {
-
     private func itemWidth(for width: CGFloat, spacing: CGFloat) -> CGFloat {
         let itemsInRow: CGFloat = 4
         let totalSpacing: CGFloat = 4 * spacing + (itemsInRow - 3) * spacing

@@ -1,6 +1,6 @@
 import UIKit
 
-class PhotogridCollectionViewCell: UICollectionViewCell {
+final class PhotogridCollectionViewCell: UICollectionViewCell {
     
     private lazy var image: UIImageView = {
         let image = UIImageView()
@@ -12,16 +12,13 @@ class PhotogridCollectionViewCell: UICollectionViewCell {
         return image
     }()
 
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         contentView.addSubview(image)
-        
         NSLayoutConstraint.activate([
-            
             image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             image.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             image.topAnchor.constraint(equalTo: contentView.topAnchor),

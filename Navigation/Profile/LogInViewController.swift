@@ -1,13 +1,12 @@
 import UIKit
 
-class LogInViewController: UIViewController {
-    
+final class LogInViewController: UIViewController {
+
     @objc func tapGesture(_ gesture: UITapGestureRecognizer) {
         print("Did catch action")
     }
-    
 
-    //MARK: Setting properties
+    //MARK: -Setting properties
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -100,9 +99,7 @@ class LogInViewController: UIViewController {
         passwordTextField.delegate = self
         return passwordTextField
     }()
-    
 
-    
     private lazy var loginButton: UIButton = {
         let loginButton = UIButton(type: .custom)
         loginButton.setTitle("Log in", for: .normal)
@@ -116,9 +113,8 @@ class LogInViewController: UIViewController {
         loginButton.addTarget(self, action: #selector(holdDown), for: .touchDown)
         return loginButton
     }()
-    
-    
-    var imageView: UIImageView = {
+
+    private lazy var imageView: UIImageView = {
         var imageView = UIImageView()
         imageView.image = UIImage(named: "blue_pixel-1")
         imageView.clipsToBounds = true
@@ -126,15 +122,13 @@ class LogInViewController: UIViewController {
         return imageView
     }()
 
-    
-    //MARK: Setting methods
+    //MARK: -Setting methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
     }
-    
-    
+
     fileprivate func setupUI() {
         let recognizer = UITapGestureRecognizer()
         recognizer.addTarget(self, action: #selector(tapGesture))
@@ -153,7 +147,6 @@ class LogInViewController: UIViewController {
         loginButton.addSubview(imageView)
         
         NSLayoutConstraint.activate([
-            
             scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
@@ -191,13 +184,11 @@ class LogInViewController: UIViewController {
             loginButton.topAnchor.constraint(equalTo: textFieldsContentView.bottomAnchor, constant: 16.0),
             loginButton.heightAnchor.constraint(equalToConstant: 50.0),
             loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -200.0),
-            
-            
+
             imageView.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
             imageView.topAnchor.constraint(equalTo: loginButton.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: loginButton.bottomAnchor)
-            
         ])
     }
     
@@ -206,7 +197,6 @@ class LogInViewController: UIViewController {
         navigationController?.navigationBar.isHidden = true
         
         let notificationCenter = NotificationCenter.default
-        
         notificationCenter.addObserver(self, selector: #selector(self.kbdShow), name: UIResponder.keyboardWillShowNotification, object: nil)
         
         notificationCenter.addObserver(self, selector: #selector(self.kbdHide), name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -214,7 +204,6 @@ class LogInViewController: UIViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        
         let notificationCenter = NotificationCenter.default
         notificationCenter.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
         notificationCenter.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
@@ -226,15 +215,13 @@ class LogInViewController: UIViewController {
             scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(top: 0, left: 0, bottom: kbdSize.height, right: 0)
         }
     }
-    
-    
+
     @objc private func kbdHide(_ notification: NSNotification) {
         scrollView.contentOffset = CGPoint.zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
-    
-    
-    @objc func holdRelease(sender: UIButton) {
+
+    @objc private func holdRelease(sender: UIButton) {
         imageView.alpha = 1.0
     }
 
@@ -250,7 +237,6 @@ class LogInViewController: UIViewController {
         
     }
 }
-
 
 extension LogInViewController: UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {

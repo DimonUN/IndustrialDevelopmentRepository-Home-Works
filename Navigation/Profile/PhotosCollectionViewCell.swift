@@ -1,7 +1,7 @@
 import UIKit
 
-class PhotosCollectionViewCell: UICollectionViewCell {
-    
+final class PhotosCollectionViewCell: UICollectionViewCell {
+
     private lazy var image: UIImageView = {
         let image = UIImageView()
         image.toAutoLayout()
@@ -10,8 +10,7 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         
         return image
     }()
-    
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -21,23 +20,17 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         setupUI()
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         contentView.addSubview(image)
-        
         NSLayoutConstraint.activate([
             image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             image.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             image.topAnchor.constraint(equalTo: contentView.topAnchor),
             image.heightAnchor.constraint(equalTo: image.widthAnchor)
         ])
-        
     }
     
     public func setup(image: UIImage) {
         self.image.image = image
     }
 }
-
-
-
-

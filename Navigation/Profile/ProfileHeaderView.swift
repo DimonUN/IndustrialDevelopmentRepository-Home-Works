@@ -1,17 +1,14 @@
 import UIKit
 
-class ProfileHeaderView: UIView {
+final class ProfileHeaderView: UIView {
     
     private lazy var statusText: String = ""
-    
-    
+
     var avatarImageViewLeadingAnchor: NSLayoutConstraint?
     var avatarImageViewTopAnchor: NSLayoutConstraint?
     var avatarImageViewWidthAnchor: NSLayoutConstraint?
     var avatarImageViewHeightAnchor: NSLayoutConstraint?
-    
 
-    
     var avatarContentView: UIView = {
         let avatarContentView = UIView()
         avatarContentView.toAutoLayout()
@@ -50,9 +47,11 @@ class ProfileHeaderView: UIView {
         setStatusButton.layer.shadowRadius = 4.0
         setStatusButton.layer.shadowColor = UIColor.black.cgColor
         setStatusButton.layer.shadowOpacity = 0.7
-        setStatusButton.addTarget(self,
-                               action: #selector(buttonPressed),
-                               for: .touchUpInside)
+        setStatusButton.addTarget(
+            self,
+            action: #selector(buttonPressed),
+            for: .touchUpInside
+        )
         setStatusButton.toAutoLayout()
         return setStatusButton
     }()
@@ -62,19 +61,21 @@ class ProfileHeaderView: UIView {
         statusTextField.backgroundColor = .white
         statusTextField.font = UIFont.systemFont(ofSize: 15)
         statusTextField.placeholder = "Set your status"
-       
+
         statusTextField.keyboardType = UIKeyboardType.default
         statusTextField.returnKeyType = UIReturnKeyType.done
         statusTextField.clearButtonMode = UITextField.ViewMode.whileEditing
         statusTextField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
         statusTextField.textColor = .black
-        
+
         statusTextField.layer.cornerRadius = 12
         statusTextField.layer.borderWidth = 1
         statusTextField.layer.borderColor = UIColor.black.cgColor
-        statusTextField.addTarget(self,
-                            action: #selector(statusTextChanged),
-                            for: .editingChanged)
+        statusTextField.addTarget(
+            self,
+            action: #selector(statusTextChanged),
+            for: .editingChanged
+        )
         statusTextField.toAutoLayout()
         return statusTextField
     }()
@@ -88,17 +89,17 @@ class ProfileHeaderView: UIView {
         return statusLabel
     }()
     
-    @objc func statusTextChanged(_ textField: UITextField) {
+    @objc private func statusTextChanged(_ textField: UITextField) {
         guard let text = textField.text else {return}
         statusText = text
     }
     
-    @objc func buttonPressed(sender: UIButton) {
+    @objc private func buttonPressed(sender: UIButton) {
         statusLabel.text = statusText
         print(statusLabel.text ?? "Unknown text")
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         addSubviews(fullNameLabel, setStatusButton, statusLabel, statusTextField, avatarContentView, avatarImageView)
         avatarImageView.isUserInteractionEnabled = true
         
@@ -119,35 +120,44 @@ class ProfileHeaderView: UIView {
         avatarImageViewHeightAnchor?.isActive = true
         
         NSLayoutConstraint.activate([
-            
             setStatusButton.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            self.safeAreaLayoutGuide.trailingAnchor.constraint(
-                equalTo: setStatusButton.trailingAnchor, constant: 16),
+                equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 16
+            ),
+            safeAreaLayoutGuide.trailingAnchor.constraint(
+                equalTo: setStatusButton.trailingAnchor, constant: 16
+            ),
             setStatusButton.bottomAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -10),
+                equalTo: safeAreaLayoutGuide.bottomAnchor, constant: -10
+            ),
             setStatusButton.heightAnchor.constraint(
-                equalToConstant: 50),
-            
+                equalToConstant: 50
+            ),
             fullNameLabel.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
+                equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 186
+            ),
             fullNameLabel.topAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 27),
-            
+                equalTo: safeAreaLayoutGuide.topAnchor, constant: 27
+            ),
             statusLabel.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
+                equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 186
+            ),
             statusLabel.topAnchor.constraint(
-                equalTo: fullNameLabel.bottomAnchor, constant: 30),
-            statusLabel.heightAnchor.constraint(equalToConstant: 15),
-            
+                equalTo: fullNameLabel.bottomAnchor, constant: 30
+            ),
+            statusLabel.heightAnchor.constraint(equalToConstant: 15
+            ),
             statusTextField.leadingAnchor.constraint(
-                equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 186),
+                equalTo: safeAreaLayoutGuide.leadingAnchor, constant: 186
+            ),
             statusTextField.topAnchor.constraint(
-                equalTo: statusLabel.bottomAnchor, constant: 10),
+                equalTo: statusLabel.bottomAnchor, constant: 10
+            ),
             statusTextField.heightAnchor.constraint(
-                equalToConstant: 40),
+                equalToConstant: 40
+            ),
             self.safeAreaLayoutGuide.trailingAnchor.constraint(
-                equalTo: statusTextField.trailingAnchor, constant: 16),
+                equalTo: statusTextField.trailingAnchor, constant: 16
+            )
         ])
     }
     

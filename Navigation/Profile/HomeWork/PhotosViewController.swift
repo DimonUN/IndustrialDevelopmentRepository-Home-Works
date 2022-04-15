@@ -1,13 +1,11 @@
 import UIKit
 import iOSIntPackage
 
-class PhotosViewController: UIViewController {
+final class PhotosViewController: UIViewController {
     
 //MARK: -Выполнение ДЗ
     private let facade = ImagePublisherFacade()
-    
     private var imageFromPublisher: [UIImage] = []
-    
     private enum CollectionReuseIdentifiers: String {
             case photos
         }
@@ -20,10 +18,11 @@ class PhotosViewController: UIViewController {
     
     private var collectionView: UICollectionView = {
         let viewLayout = UICollectionViewFlowLayout()
-        var collectionView = UICollectionView(frame: .zero,
-            collectionViewLayout: viewLayout)
+        var collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: viewLayout
+        )
         collectionView.toAutoLayout()
-        
         return collectionView
     }()
     
@@ -36,10 +35,9 @@ class PhotosViewController: UIViewController {
         facade.removeSubscription(for: self)
         facade.rechargeImageLibrary()
     }
-    
-    
+
 //MARK: -Выполнение ДЗ
-    fileprivate func setupFromFacade() {
+    private func setupFromFacade() {
         let arrayOfImages = PhotosProvider()
         facade.subscribe(self)
         facade.addImagesWithTimer(time: 0.1, repeat: 30, userImages: arrayOfImages.getImages())
@@ -52,13 +50,16 @@ class PhotosViewController: UIViewController {
         setupFromFacade()
     }
     
-    fileprivate func setupCollection() {
+    private func setupCollection() {
         self.collectionView.dataSource = self
         self.collectionView.delegate = self
-        collectionView.register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue)
+        collectionView.register(
+            PhotosCollectionViewCell.self,
+            forCellWithReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue
+        )
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         self.view.backgroundColor = .white
         self.title = "Photo Gallery"
         self.view.addSubview(collectionView)
@@ -83,7 +84,6 @@ extension PhotosProvider {
     }
 }
 
-
 //MARK: -Выполнение ДЗ
 extension PhotosViewController: ImageLibrarySubscriber {
     func receive(images: [UIImage]) {
@@ -92,10 +92,8 @@ extension PhotosViewController: ImageLibrarySubscriber {
     }
 }
 
-
 //MARK: -Выполнение ДЗ
 extension PhotosViewController: UICollectionViewDataSource {
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         imageFromPublisher.count
     }
@@ -104,14 +102,12 @@ extension PhotosViewController: UICollectionViewDataSource {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionReuseIdentifiers.photos.rawValue, for: indexPath) as! PhotosCollectionViewCell
         
         let data = imageFromPublisher[indexPath.row]
-        
         cell.setup(image: data)
         return cell
     }
 }
 
 extension PhotosViewController: UICollectionViewDelegateFlowLayout {
-    
     private func itemWidth(for width: CGFloat, spacing: CGFloat) -> CGFloat {
         let itemsInRow: CGFloat = 3
         let totalSpacing: CGFloat = 3 * spacing + (itemsInRow - 2) * spacing
@@ -126,7 +122,6 @@ extension PhotosViewController: UICollectionViewDelegateFlowLayout {
     ) -> CGSize {
         let size = itemWidth(for: view.frame.width, spacing: Constants.spacing)
         return CGSize(width: size, height: size)
-            
     }
 
     func collectionView(

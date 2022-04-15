@@ -14,7 +14,6 @@
 		5A042F1927AD426900C4BFB7 /* PhotosCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A042F1827AD426900C4BFB7 /* PhotosCollectionViewCell.swift */; };
 		5A0E5194278EADCB006E603B /* LogInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A0E5193278EADCB006E603B /* LogInViewController.swift */; };
 		5A140E2E2754C0EE002327CE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A140E2D2754C0EE002327CE /* AppDelegate.swift */; };
-		5A140E322754C0EE002327CE /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A140E312754C0EE002327CE /* ViewController.swift */; };
 		5A140E372754C0EE002327CE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5A140E362754C0EE002327CE /* Assets.xcassets */; };
 		5A140E3A2754C0EE002327CE /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5A140E382754C0EE002327CE /* LaunchScreen.storyboard */; };
 		5A3EC5F3279AB5790073874D /* PostProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A3EC5F2279AB5790073874D /* PostProvider.swift */; };
@@ -39,7 +38,6 @@
 		5A0E5193278EADCB006E603B /* LogInViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogInViewController.swift; sourceTree = "<group>"; };
 		5A140E2A2754C0EE002327CE /* Navigation.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Navigation.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5A140E2D2754C0EE002327CE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		5A140E312754C0EE002327CE /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		5A140E362754C0EE002327CE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5A140E392754C0EE002327CE /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5A140E3B2754C0EE002327CE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -107,7 +105,6 @@
 				5A9FCD92278C1817001D2F82 /* Feed */,
 				5A140E2D2754C0EE002327CE /* AppDelegate.swift */,
 				5A9FCD90278C16E6001D2F82 /* Post.swift */,
-				5A140E312754C0EE002327CE /* ViewController.swift */,
 				5A140E362754C0EE002327CE /* Assets.xcassets */,
 				5A140E382754C0EE002327CE /* LaunchScreen.storyboard */,
 				5A140E3B2754C0EE002327CE /* Info.plist */,
@@ -221,7 +218,6 @@
 			files = (
 				5AA95D5827AC1EAC00A0D22C /* FirstSectionOfTableView.swift in Sources */,
 				5A565DFE2795827100EBBF92 /* PostTableViewCell.swift in Sources */,
-				5A140E322754C0EE002327CE /* ViewController.swift in Sources */,
 				5A140E2E2754C0EE002327CE /* AppDelegate.swift in Sources */,
 				5A0E5194278EADCB006E603B /* LogInViewController.swift in Sources */,
 				5A3EC5F3279AB5790073874D /* PostProvider.swift in Sources */,

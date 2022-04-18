@@ -11,11 +11,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow()
         
         let tabBarController = UITabBarController()
-        
+        let model = Model()
+
         let logInVC = LogInViewController()
         logInVC.tabBarItem = UITabBarItem(title: "Profile", image: .init(systemName: "person.fill"), tag: 0)
         
-        let feedVC = FeedViewController()
+        let feedVC = FeedViewController(model: model)
         feedVC.tabBarItem = UITabBarItem(title: "Feed", image: .init(systemName: "house.fill"), tag: 1)
         
         let navigationAppearance = UINavigationBarAppearance()

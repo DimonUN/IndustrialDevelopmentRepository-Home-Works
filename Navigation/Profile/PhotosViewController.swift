@@ -2,8 +2,7 @@ import UIKit
 import iOSIntPackage
 
 final class PhotosViewController: UIViewController {
-    
-//MARK: -Выполнение ДЗ
+
     private let facade = ImagePublisherFacade()
     private var imageFromPublisher: [UIImage] = []
     private enum CollectionReuseIdentifiers: String {
@@ -29,14 +28,12 @@ final class PhotosViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         navigationController?.navigationBar.isHidden = false
     }
-    
-//MARK: -Выполнение ДЗ
+
     override func viewWillDisappear(_ animated: Bool) {
         facade.removeSubscription(for: self)
         facade.rechargeImageLibrary()
     }
 
-//MARK: -Выполнение ДЗ
     private func setupFromFacade() {
         let arrayOfImages = PhotosProvider()
         facade.subscribe(self)
@@ -84,7 +81,6 @@ extension PhotosProvider {
     }
 }
 
-//MARK: -Выполнение ДЗ
 extension PhotosViewController: ImageLibrarySubscriber {
     func receive(images: [UIImage]) {
         self.imageFromPublisher = images
@@ -92,7 +88,6 @@ extension PhotosViewController: ImageLibrarySubscriber {
     }
 }
 
-//MARK: -Выполнение ДЗ
 extension PhotosViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         imageFromPublisher.count

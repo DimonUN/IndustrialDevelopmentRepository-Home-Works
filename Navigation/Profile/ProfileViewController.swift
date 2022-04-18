@@ -2,7 +2,7 @@ import UIKit
 
 final class ProfileViewController: UIViewController {
 
-    //MARK: -Setting properties
+    //MARK: -Properties
     
     private enum CellReuseIdentifiers: String {
         case header
@@ -50,19 +50,60 @@ final class ProfileViewController: UIViewController {
         return closeLabel
     }()
 
-    //MARK: -Setting methods
+    //MARK: -Methods
     
     override func viewDidLoad() {
         super.viewDidLoad()
         setupUI()
         setupHeaderTableView()
         setupLayout()
+        header.statusTextField.delegate = self
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.kbdShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(self.kbdHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
     }
-    
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    @objc private func kbdShow(_ notification: NSNotification) {
+        if let kbdSize = (notification.userInfo?[
+            UIResponder.keyboardFrameEndUserInfoKey
+        ] as? NSValue)?.cgRectValue {
+            tableView.contentInset.bottom = kbdSize.height
+            tableView.verticalScrollIndicatorInsets = UIEdgeInsets(
+                top: 0,
+                left: 0,
+                bottom: kbdSize.height,
+                right: 0
+            )
+        }
+    }
+
+    @objc private func kbdHide(_ notofocation: NSNotification) {
+        tableView.contentOffset = CGPoint.zero
+        tableView.verticalScrollIndicatorInsets = .zero
+    }
+
     var avatarContentViewLeadingAnchor: NSLayoutConstraint?
     var avatarContentViewTrailingAnchor: NSLayoutConstraint?
     var avatarContentViewTopAnchor: NSLayoutConstraint?
@@ -74,10 +115,18 @@ final class ProfileViewController: UIViewController {
     var avatarImageViewCenterYAnchor: NSLayoutConstraint?
     
     @objc private func tapGesture(_ gesture: UITapGestureRecognizer) {
-        avatarImageViewNewWidthAnchor = header.avatarImageView.widthAnchor.constraint(equalTo: self.view.widthAnchor)
-        avatarImageViewNewHeightAnchor = header.avatarImageView.heightAnchor.constraint(equalTo: self.view.widthAnchor)
-        avatarImageViewCenterXAnchor = header.avatarImageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
-        avatarImageViewCenterYAnchor = header.avatarImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+        avatarImageViewNewWidthAnchor = header.avatarImageView.widthAnchor.constraint(
+            equalTo: self.view.widthAnchor)
+
+        avatarImageViewNewHeightAnchor = header.avatarImageView.heightAnchor.constraint(
+            equalTo: self.view.widthAnchor
+        )
+        avatarImageViewCenterXAnchor = header.avatarImageView.centerXAnchor.constraint(
+            equalTo: self.view.centerXAnchor
+        )
+        avatarImageViewCenterYAnchor = header.avatarImageView.centerYAnchor.constraint(
+            equalTo: self.view.centerYAnchor
+        )
         
         self.tableView.isScrollEnabled = false
         self.tableView.isUserInteractionEnabled = false
@@ -150,7 +199,6 @@ final class ProfileViewController: UIViewController {
 
     private func setupLayout() {
         self.view.addSubview(self.closeLabel)
-
         avatarContentViewLeadingAnchor = header.avatarContentView.leadingAnchor.constraint(
             equalTo: view.safeAreaLayoutGuide.leadingAnchor
         )
@@ -198,10 +246,18 @@ final class ProfileViewController: UIViewController {
         view.backgroundColor = .white
         view.addSubviews(tableView)
         NSLayoutConstraint.activate([
-            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
+            tableView.leadingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.leadingAnchor
+            ),
+            tableView.trailingAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor
+            ),
+            tableView.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor
+            ),
+            tableView.bottomAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.bottomAnchor
+            )
         ])
         
         tableView.register(
@@ -219,13 +275,11 @@ final class ProfileViewController: UIViewController {
         
         tableView.dataSource = self
         tableView.delegate = self
-        
         tableView.rowHeight = 450
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 600
     }
 }
-
 
 //MARK: -Extension UITableViewDataSource
 
@@ -295,11 +349,18 @@ extension ProfileViewController: UITableViewDelegate {
         didSelectRowAt indexPath: IndexPath
     ) {
         guard indexPath.section == 0 else {return}
-        let photosVC = PhotosViewController()
-        navigationController?.pushViewController(photosVC, animated: true)
+        let photosViewController = PhotosViewController()
+        navigationController?.pushViewController(photosViewController, animated: true)
     }
 }
 
+extension ProfileViewController: UITextFieldDelegate {
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+
+        header.statusTextField.resignFirstResponder()
+        return true
+    }
+}
 
 
 

@@ -1,12 +1,11 @@
 import UIKit
 
 final class LogInViewController: UIViewController {
-
     @objc func tapGesture(_ gesture: UITapGestureRecognizer) {
         print("Did catch action")
     }
 
-    //MARK: -Setting properties
+    //MARK: -Private properties
     
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
@@ -21,8 +20,7 @@ final class LogInViewController: UIViewController {
         contentView.toAutoLayout()
         return contentView
     }()
-    
-    
+
     private lazy var logoContentView: UIView = {
         let logoContentView = UIView()
         logoContentView.toAutoLayout()
@@ -39,7 +37,6 @@ final class LogInViewController: UIViewController {
         return logoImageView
     }()
 
-        
     private lazy var textFieldsContentView: UIView = {
         let textFieldsContentView = UIView()
         textFieldsContentView.toAutoLayout()
@@ -50,8 +47,7 @@ final class LogInViewController: UIViewController {
         textFieldsContentView.backgroundColor = .systemGray6
         return textFieldsContentView
     }()
-    
-    
+
     private lazy var loginTextField: UITextField = {
         let loginTextField = UITextField()
         loginTextField.toAutoLayout()
@@ -74,8 +70,7 @@ final class LogInViewController: UIViewController {
         loginTextField.delegate = self
         return loginTextField
     }()
-    
-    
+
     private lazy var passwordTextField: UITextField = {
         let passwordTextField = UITextField()
         passwordTextField.toAutoLayout()
@@ -100,17 +95,17 @@ final class LogInViewController: UIViewController {
         return passwordTextField
     }()
 
-    private lazy var loginButton: UIButton = {
-        let loginButton = UIButton(type: .custom)
-        loginButton.setTitle("Log in", for: .normal)
-        loginButton.toAutoLayout()
+    private lazy var loginButton: RegularButton = {
+        let loginButton = RegularButton(setTitle: "Log in", for: .normal)
         loginButton.setTitleColor(.white, for: .normal)
-        
         loginButton.layer.cornerRadius = 10.0
-        loginButton.layer.cornerRadius = 10
         loginButton.clipsToBounds = true
-        loginButton.addTarget(self, action: #selector(holdRelease), for: .touchUpInside)
-        loginButton.addTarget(self, action: #selector(holdDown), for: .touchDown)
+        loginButton.touchUpInside = {
+            self.buttonRealesed(sender: loginButton)
+        }
+        loginButton.touchDown = {
+            self.buttonPressed(sender: loginButton)
+        }
         return loginButton
     }()
 
@@ -129,13 +124,28 @@ final class LogInViewController: UIViewController {
         setupUI()
     }
 
-    fileprivate func setupUI() {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(self.kbdShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+
+        notificationCenter.addObserver(self, selector: #selector(self.kbdHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+
+    private func setupUI() {
         let recognizer = UITapGestureRecognizer()
         recognizer.addTarget(self, action: #selector(tapGesture))
         
         logoContentView.addGestureRecognizer(recognizer)
-        
-        view.backgroundColor = .red
+
         view.backgroundColor = .white
         navigationController?.navigationBar.isHidden = true
         
@@ -183,30 +193,13 @@ final class LogInViewController: UIViewController {
             loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16.0),
             loginButton.topAnchor.constraint(equalTo: textFieldsContentView.bottomAnchor, constant: 16.0),
             loginButton.heightAnchor.constraint(equalToConstant: 50.0),
-            loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -200.0),
+            loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -100.0),
 
             imageView.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
             imageView.topAnchor.constraint(equalTo: loginButton.topAnchor),
             imageView.bottomAnchor.constraint(equalTo: loginButton.bottomAnchor)
         ])
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.navigationBar.isHidden = true
-        
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.addObserver(self, selector: #selector(self.kbdShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        
-        notificationCenter.addObserver(self, selector: #selector(self.kbdHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        let notificationCenter = NotificationCenter.default
-        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
     @objc private func kbdShow(_ notification: NSNotification) {
@@ -217,23 +210,22 @@ final class LogInViewController: UIViewController {
     }
 
     @objc private func kbdHide(_ notification: NSNotification) {
-        scrollView.contentOffset = CGPoint.zero
+        scrollView.contentInset = .zero
         scrollView.verticalScrollIndicatorInsets = .zero
     }
 
-    @objc private func holdRelease(sender: UIButton) {
+    @objc private func buttonRealesed(sender: UIButton) {
         imageView.alpha = 1.0
     }
 
-    
-    @objc func holdDown(sender: UIButton) {
+    @objc func buttonPressed(sender: UIButton) {
         guard loginButton.isSelected || loginButton.isHighlighted else {return}
         imageView.alpha = 0.8
         loginTextField.resignFirstResponder()
         passwordTextField.resignFirstResponder()
         
-        let profileVC = ProfileViewController()
-        self.navigationController?.pushViewController(profileVC, animated: true)
+        let profileViewController = ProfileViewController()
+        self.navigationController?.pushViewController(profileViewController, animated: true)
         
     }
 }

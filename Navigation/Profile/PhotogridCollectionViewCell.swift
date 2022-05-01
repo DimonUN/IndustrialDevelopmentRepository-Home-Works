@@ -19,9 +19,7 @@ class PhotogridCollectionViewCell: UICollectionViewCell {
     
     fileprivate func setupUI() {
         contentView.addSubview(image)
-        
         NSLayoutConstraint.activate([
-            
             image.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             image.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             image.topAnchor.constraint(equalTo: contentView.topAnchor),
@@ -37,5 +35,4 @@ class PhotogridCollectionViewCell: UICollectionViewCell {
     public func setup(name: String) {
         image.image = UIImage(named: name)
     }
-
 }

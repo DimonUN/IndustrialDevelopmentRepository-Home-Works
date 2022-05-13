@@ -1,50 +1,43 @@
 import Foundation
 import UIKit
 
-class FirstSectionOfTableView: UITableViewCell {
+final class FirstSectionOfTableView: UITableViewCell {
     
-    let headerTitle: UILabel = {
-        let headerTitle = UILabel()
-        headerTitle.toAutoLayout()
-        headerTitle.numberOfLines = 1
-        headerTitle.text = "Photos"
-        headerTitle.textColor = .black
-        headerTitle.font = UIFont.boldSystemFont(ofSize: 24)
-        return headerTitle
+    private lazy var headerTitleLabel: UILabel = {
+        let headerTitleLabel = UILabel()
+        headerTitleLabel.toAutoLayout()
+        headerTitleLabel.numberOfLines = 1
+        headerTitleLabel.text = "Photos"
+        headerTitleLabel.textColor = .black
+        headerTitleLabel.font = UIFont.boldSystemFont(ofSize: 24)
+        return headerTitleLabel
     }()
-    
-    let arrowImage: UIImageView = {
-        let arrowImage = UIImageView(image: UIImage(systemName: "arrow.right"))
-        arrowImage.toAutoLayout()
-        arrowImage.tintColor = .black
-        return arrowImage
+
+    private lazy var arrowImageView: UIImageView = {
+        let arrowImageView = UIImageView(image: UIImage(systemName: "arrow.right"))
+        arrowImageView.toAutoLayout()
+        arrowImageView.tintColor = .black
+        return arrowImageView
     }()
-    
+
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
 
-        
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: .default, reuseIdentifier: reuseIdentifier)
         contentView.backgroundColor = .systemGray5
-        
-        contentView.addSubviews(headerTitle, arrowImage)
+        contentView.addSubviews(headerTitleLabel, arrowImageView)
 
         NSLayoutConstraint.activate([
-            headerTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.0),
-            headerTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12.0),
-            headerTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+            headerTitleLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12.0),
+            headerTitleLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12.0),
+            headerTitleLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
 
-
-            arrowImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            arrowImage.centerYAnchor.constraint(equalTo: headerTitle.centerYAnchor),
-            arrowImage.heightAnchor.constraint(equalToConstant: 24.0),
-            arrowImage.widthAnchor.constraint(equalToConstant: 24.0)
-            
+            arrowImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            arrowImageView.centerYAnchor.constraint(equalTo: headerTitleLabel.centerYAnchor),
+            arrowImageView.heightAnchor.constraint(equalToConstant: 24.0),
+            arrowImageView.widthAnchor.constraint(equalToConstant: 24.0)
         ])
-        
     }
 }
-

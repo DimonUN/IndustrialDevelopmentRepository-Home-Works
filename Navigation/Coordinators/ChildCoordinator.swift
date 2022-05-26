@@ -31,17 +31,17 @@ class ChildCoordinator: Coordinator {
     }
 
     func start() {
-        var presenter = factory.createPresenter(type: .post)
-        presenter.coordinator = self
-        let nextController = factory.createViewController(presenter: presenter, controllerType: .post)
+        var presenter = factory.createPresenter(type: controllerType)
+        presenter.coordinator = parentCoordinator
+        let nextController = factory.createViewController(presenter: presenter, controllerType: controllerType)
         presenter.viewInput = nextController as? ViewInput
         presenter.data = "Экран Post Model"
         navigationController.pushViewController(nextController, animated: true)
     }
 
     private func startNextModule(type: Factory.ModuleType) {
-        let nextPresenter = NextPresenter()
-        let nextController = factory.createViewController(presenter: nextPresenter, controllerType: .next)
+        let nextPresenter = factory.createPresenter(type: type)
+        let nextController = factory.createViewController(presenter: nextPresenter, controllerType: type)
         navigationController.pushViewController(nextController, animated: true)
     }
 }

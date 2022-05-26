@@ -1,13 +1,40 @@
+//
+//  FeedView.swift
+//  Navigation
+//
+//  Created by Дмитрий Никоноров on 25.04.2022.
+//
+
 import UIKit
 import SnapKit
 
-final class FeedViewController: UIViewController {
+class FeedView: UIView {
+
+    //MARK: -Interface
+    var checkTextField: (() -> Void)?
+
+    var onButtonTap: (() -> Void)?
+
+    lazy var nameLabel: UILabel = {
+        let nameLabel = UILabel()
+        nameLabel.backgroundColor = .systemCyan
+        nameLabel.textColor = .white
+        nameLabel.layer.cornerRadius = 10.0
+        nameLabel.layer.borderWidth = 1.5
+        nameLabel.layer.borderColor = UIColor.white.cgColor
+        nameLabel.clipsToBounds = true
+        return nameLabel
+    }()
 
     //MARK: -Initializer
-
-    init(model: Model) {
-        self.model = model
-        super.init(nibName: nil, bundle: nil)
+    init() {
+        super.init(frame: .zero)
+        backgroundColor = .white
+        addSubview(scrollView)
+        scrollView.addSubview(contentView)
+        contentView.addSubviews(textField, mainButton, checkLabel, nextViewButton, nameLabel)
+        toAutoLayout()
+        setupLayout()
     }
 
     required init?(coder: NSCoder) {
@@ -15,21 +42,6 @@ final class FeedViewController: UIViewController {
     }
 
     //MARK: -Private properties
-
-    private lazy var post1: Post = {
-        let post1 = Post(
-            title: "",
-            author: "Ignat",
-            description: "About the dangers of malnutrition.",
-            image: "post1",
-            likes: 15,
-            views: 581
-        )
-        return post1
-    }()
-
-    private var model: Model
-
     private lazy var scrollView: UIScrollView = {
         let scrollView = UIScrollView()
         scrollView.showsVerticalScrollIndicator = true
@@ -87,77 +99,62 @@ final class FeedViewController: UIViewController {
         return checkLabel
     }()
 
+    private lazy var nextViewButton: UIButton = {
+        let nextViewButton = UIButton(type: .system)
+        nextViewButton.setTitle("Post view", for: .normal)
+        nextViewButton.setTitleColor(.white, for: .normal)
+        nextViewButton.backgroundColor = .systemBlue
+        nextViewButton.layer.cornerRadius = 10.0
+        nextViewButton.addTarget(self, action: #selector(buttonTapped(_:)), for: .touchUpInside)
+        return nextViewButton
+    }()
+
     //MARK: -Methods
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        setupUI()
-        setupLayout()
-        textField.delegate = self
-    }
-
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(gotNotification(notification:)),
-            name: .verificationPassword,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.kbdShow),
-            name: UIResponder.keyboardWillShowNotification,
-            object: nil
-        )
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(self.kbdHide),
-            name: UIResponder.keyboardWillHideNotification,
-            object: nil
-        )
-    }
-
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: .verificationPassword, object: nil)
-    }
-
-    @objc func gotNotification(notification: Notification) {
-        guard let userInfo = notification.userInfo, let color = userInfo["color"] as? UIColor else { return }
+    func updateCheckLabel(color: UIColor) {
         checkLabel.backgroundColor = color
     }
 
-    @objc private func kbdShow(_ notification: NSNotification) {
-        if let kbdSize = (notification.userInfo?[
-            UIResponder.keyboardFrameEndUserInfoKey
-        ] as? NSValue)?.cgRectValue {
-            scrollView.contentInset.bottom = kbdSize.height
-            scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(
-                top: 0,
-                left: 0,
-                bottom: kbdSize.height,
-                right: 0
-            )
-        }
+    func scrollViewShowKbd(size: CGFloat, insets: UIEdgeInsets) {
+        scrollView.contentInset.bottom = size
+        scrollView.verticalScrollIndicatorInsets = UIEdgeInsets(
+            top: insets.top,
+            left: insets.left,
+            bottom: size,
+            right: insets.right
+        )
     }
 
-    @objc private func kbdHide(_ notification: NSNotification) {
-        scrollView.contentInset = .zero
-        scrollView.verticalScrollIndicatorInsets = .zero
+    func scrollViewHideKbd(inset: UIEdgeInsets) {
+        scrollView.contentInset = inset
+        scrollView.verticalScrollIndicatorInsets = inset
     }
 
+    func getDataFromTextFielf() -> Int {
+        let data = textField.getPassword()
+        return data
+    }
+
+    func addDelegate(delegate: UITextFieldDelegate) {
+        textField.delegate = delegate
+    }
+
+    @objc func buttonTapped(_ sender: UIButton) {
+        onButtonTap?()
+    }
+
+
+
+    //MARK: -Private methods
     @objc private func checkTextField(sender: UIButton) {
-        model.check(word: textField.getPassword(textField))
+        checkTextField?()
         mainButton.alpha = 1.0
     }
 
     @objc private func buttonPressed(sender: UIButton) {
         mainButton.alpha = 0.8
     }
-    
-    fileprivate func setupLayout() {
+
+    private func setupLayout() {
         scrollView.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalToSuperview()
         }
@@ -183,20 +180,17 @@ final class FeedViewController: UIViewController {
             make.top.equalTo(mainButton.snp_bottomMargin).offset(100.0)
             make.bottom.equalToSuperview().offset(-100.0)
         }
-    }
+        nextViewButton.snp.makeConstraints { make in
+            make.leading.trailing.equalTo(checkLabel)
+            make.top.equalTo(checkLabel.snp_bottomMargin).offset(50.0)
+            make.height.equalTo(50.0)
+        }
 
-    private func setupUI() {
-        view.backgroundColor = .white
-        self.title = "Your feed"
-        view.addSubviews(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubviews(textField, mainButton, checkLabel)
-    }
-}
-
-    //MARK: -Extension
-extension FeedViewController: UITextFieldDelegate {
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        textField.resignFirstResponder()
+        nameLabel.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalToSuperview().offset(20.0)
+            make.height.equalTo(50.0)
+            make.width.greaterThanOrEqualTo(100.0)
+        }
     }
 }

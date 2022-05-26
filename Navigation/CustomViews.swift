@@ -37,14 +37,13 @@ class RegularTextField: UITextField {
     init() {
         super.init(frame: .zero)
         self.toAutoLayout()
-        self.addTarget(self, action: #selector(getPassword), for: .touchUpInside)
     }
 
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    @objc func getPassword(_ sender: UITextField) -> Int {
+    func getPassword() -> Int {
         guard let passwordHash = self.text?.hashValue else { return 0 }
         return passwordHash
     }

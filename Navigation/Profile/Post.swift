@@ -1,3 +1,12 @@
+//
+//  Post.swift
+//  Navigation
+//
+//  Created by Дмитрий Никоноров on 26.04.2022.
+//
+
+import Foundation
+
 struct Post {
     let title: String
     let author: String
@@ -6,4 +15,3 @@ struct Post {
     let likes: Int
     let views: Int
 }
-

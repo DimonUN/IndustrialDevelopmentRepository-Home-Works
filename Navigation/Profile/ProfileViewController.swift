@@ -3,35 +3,92 @@ import StorageService
 import iOSIntPackage
 
 class ProfileViewController: UIViewController {
-    
-//MARK: -Setting properties
-    
-    fileprivate enum CellReuseIdentifiers: String {
+
+//  MARK: -Setting properties
+    private enum CellReuseIdentifiers: String {
         case header
         case photos
         case posts
     }
-    
-    private let processor = ImageProcessor()
-    
-    fileprivate var recognizer: UITapGestureRecognizer = {
+
+    private enum NumbersOfCellsInTableView {
+        static let zeroSection = 1
+        static let firstSection = 1
+    }
+
+    private lazy var processor = ImageProcessor()
+    private lazy var processedCGImages: [CGImage?] = []
+
+//  MARK: -Home Work
+    #if DEBUG
+    private var secondImages = PhotosProvider.get()
+    private lazy var secondArrayOfImages: [UIImage] = []
+
+    private func prepareImages() {
+        secondImages.forEach({
+            secondArrayOfImages.append(UIImage(named: $0) ?? UIImage())
+        })
+    }
+    private func processedImages() {
+        self.processor.processImagesOnThread(sourceImages: secondArrayOfImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .userInteractive) { [weak self] someImages in
+            someImages.forEach({
+                self?.processedCGImages.append($0)
+            })
+//Время выполнения метода при:
+//  ColorFilter.motionBlur(radius: 20.0),
+//  qos: .background
+//  1.61 сек
+
+//  при ColorFilter.motionBlur(radius: 20.0),
+//  qos: .userInteractive
+//  657 мс
+
+//  при ColorFilter.posterize,
+//  qos: .userInteractive
+//  275 мс
+        }
+    }
+    #else
+    private lazy var arrayOfPost: [Post] = PostProvider.get()
+    private lazy var originalImages: [UIImage] = []
+
+    private func prepareImages() {
+        arrayOfPost.forEach({
+            originalImages.append(UIImage(named: $0.image) ?? UIImage())
+        })
+
+    }
+    private func processedImages() {
+        self.processor.processImagesOnThread(sourceImages: originalImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .background) { [weak self] someImages in
+            someImages.forEach({
+                self?.processedCGImages.append($0)
+            })
+//Время выполнения метода при:
+//  ColorFilter.motionBlur(radius: 20.0),
+//  qos: .background
+//  298 мс
+
+//  при ColorFilter.motionBlur(radius: 20.0),
+//  qos: .userInteractive
+//  21 мс
+
+//  при ColorFilter.posterize,
+//  qos: .userInteractive
+//  113 мс
+        }
+    }
+    #endif
+
+    private var recognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer()
         return recognizer
     }()
     
-    fileprivate var animator: UIViewPropertyAnimator = {
+    private var animator: UIViewPropertyAnimator = {
         let animator = UIViewPropertyAnimator()
         return animator
     }()
-    
-    fileprivate lazy var arrayOfPost: [Post] = PostProvider.get()
-    
 
-    fileprivate enum NumbersOfCellsInTableView {
-        static let zeroSection: Int = 1
-        static let firstSection: Int = 1
-    }
-    
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
         tableView.toAutoLayout()
@@ -39,13 +96,13 @@ class ProfileViewController: UIViewController {
         return tableView
     }()
     
-    fileprivate var header: ProfileHeaderView = {
+    private var header: ProfileHeaderView = {
         let header = ProfileHeaderView()
         header.alpha = 0
         return header
     }()
     
-    fileprivate lazy var closeLabel: UIButton = {
+    private lazy var closeLabel: UIButton = {
         let closeLabel = UIButton()
         closeLabel.toAutoLayout()
         closeLabel.setImage(UIImage(systemName: "xmark"), for: .normal)
@@ -54,8 +111,7 @@ class ProfileViewController: UIViewController {
         closeLabel.addTarget(self, action: #selector(closeAvatarImage), for: .touchUpInside)
         return closeLabel
     }()
-    
-    
+
 //MARK: -Setting methods
     
     override func viewDidLoad() {
@@ -63,6 +119,9 @@ class ProfileViewController: UIViewController {
         setupUI()
         setupHeaderTableView()
         setupLayout()
+        prepareImages()
+        processedImages()
+
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -87,10 +146,7 @@ class ProfileViewController: UIViewController {
         
         self.tableView.isScrollEnabled = false
         self.tableView.isUserInteractionEnabled = false
-        
-        
-        
-        
+
         UIView.animateKeyframes(
                 withDuration: 0.8,
                 delay: 0,
@@ -105,32 +161,26 @@ class ProfileViewController: UIViewController {
                             self.header.avatarImageViewWidthAnchor?.isActive = false
                             self.header.avatarImageViewHeightAnchor?.isActive = false
                             self.header.avatarImageView.layer.cornerRadius = 0
-
                             self.avatarImageViewNewWidthAnchor?.isActive = true
                             self.avatarImageViewNewHeightAnchor?.isActive = true
                             self.avatarImageViewCenterXAnchor?.isActive = true
                             self.avatarImageViewCenterYAnchor?.isActive = true
-
                             self.view.layoutIfNeeded()
                         }
+
                     UIView.addKeyframe(
                         withRelativeStartTime: 0.625,
                         relativeDuration: 0.375) {
                             self.closeLabel.alpha = 1
                         }
-                },
-                completion: { finished in
-
-                })
+                }
+        )
     }
-    
-    
+
     @objc func closeAvatarImage() {
         self.tableView.isUserInteractionEnabled = true
         self.tableView.isScrollEnabled = true
-        
-        
-        
+
         UIView.animateKeyframes(
             withDuration: 0.8,
             delay: 0,
@@ -144,32 +194,24 @@ class ProfileViewController: UIViewController {
                 UIView.addKeyframe(
                     withRelativeStartTime: 0.375,
                     relativeDuration: 0.625) {
-                        
                         self.header.avatarContentView.alpha = 0
-                        
                         self.avatarImageViewNewWidthAnchor?.isActive = false
                         self.avatarImageViewNewHeightAnchor?.isActive = false
                         self.avatarImageViewCenterXAnchor?.isActive = false
                         self.avatarImageViewCenterYAnchor?.isActive = false
-                        
                         self.header.avatarImageViewLeadingAnchor?.isActive = true
                         self.header.avatarImageViewTopAnchor?.isActive = true
                         self.header.avatarImageViewWidthAnchor?.isActive = true
                         self.header.avatarImageViewHeightAnchor?.isActive = true
                         self.header.avatarImageView.layer.cornerRadius = 70
-                        
                         self.view.layoutIfNeeded()
                     }
-            },
-            completion: { finished in
-
-            })
+            }
+        )
     }
-    
-    
-    fileprivate func setupLayout() {
+
+    private func setupLayout() {
         self.view.addSubview(self.closeLabel)
-        
         avatarContentViewLeadingAnchor = self.header.avatarContentView.leadingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.leadingAnchor)
         avatarContentViewTrailingAnchor = self.header.avatarContentView.trailingAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.trailingAnchor)
         avatarContentViewTopAnchor = self.header.avatarContentView.topAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.topAnchor)
@@ -188,14 +230,14 @@ class ProfileViewController: UIViewController {
     }
 
     
-    fileprivate func setupHeaderTableView() {
+    private func setupHeaderTableView() {
         self.header = ProfileHeaderView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: 220))
         header.avatarImageView.addGestureRecognizer(recognizer)
         self.tableView.tableHeaderView = header
         self.recognizer.addTarget(self, action: #selector(tapGesture(_:)))
     }
     
-    fileprivate func setupUI() {
+    private func setupUI() {
         view.backgroundColor = .white
         view.addSubviews(tableView)
         NSLayoutConstraint.activate([
@@ -205,13 +247,21 @@ class ProfileViewController: UIViewController {
             tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor)
         ])
         
-        tableView.register(FirstSectionOfTableView.self, forCellReuseIdentifier: CellReuseIdentifiers.header.rawValue)
-        tableView.register(PhotosTableViewCell.self, forCellReuseIdentifier: CellReuseIdentifiers.photos.rawValue)
-        tableView.register(PostTableViewCell.self, forCellReuseIdentifier: CellReuseIdentifiers.posts.rawValue)
-        
+        tableView.register(
+            FirstSectionOfTableView.self,
+            forCellReuseIdentifier: CellReuseIdentifiers.header.rawValue
+        )
+        tableView.register(
+            PhotosTableViewCell.self,
+            forCellReuseIdentifier: CellReuseIdentifiers.photos.rawValue
+        )
+        tableView.register(
+            PostTableViewCell.self,
+            forCellReuseIdentifier: CellReuseIdentifiers.posts.rawValue
+        )
+
         tableView.dataSource = self
         tableView.delegate = self
-        
         tableView.rowHeight = 450
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 600
@@ -222,7 +272,6 @@ class ProfileViewController: UIViewController {
 //MARK: -extension UITableViewDataSource
 
 extension ProfileViewController: UITableViewDataSource {
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         var n = 0
         switch section {
@@ -231,58 +280,52 @@ extension ProfileViewController: UITableViewDataSource {
         case 1:
             n = NumbersOfCellsInTableView.firstSection
         default:
-            n = arrayOfPost.count
+            #if DEBUG
+            n = secondImages.count
+            #else
+            n = originalImages.count
+            #endif
         }
         return n
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         switch indexPath.section {
+
         case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: CellReuseIdentifiers.header.rawValue, for: indexPath) as! FirstSectionOfTableView
             cell.selectionStyle = .none
             return cell
-            
+
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: CellReuseIdentifiers.photos.rawValue, for: indexPath) as! PhotosTableViewCell
             return cell
-            
+
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: CellReuseIdentifiers.posts.rawValue, for: indexPath) as! PostTableViewCell
-            let data = arrayOfPost[indexPath.row]
-            var processedImage = UIImage()
-            
-            
-//MARK: -usage iOSIntPackage functionality (ImageProcessor)
-            
-            if indexPath.row % 2 == 0 {
-                self.processor.processImage(
-                    sourceImage: UIImage(named: data.image)!,
-                    filter: ColorFilter.tonal) {
-                        someImage in
-                        processedImage = someImage ?? UIImage()
-                }
-            } else if indexPath.row % 3 == 0 {
-                self.processor.processImage(
-                    sourceImage: UIImage(named: data.image)!,
-                    filter: ColorFilter.posterize) {
-                        someImage in
-                        processedImage = someImage ?? UIImage()
-                    }
-            } else {
-                self.processor.processImage(
-                    sourceImage: UIImage(named: data.image)!,
-                    filter: ColorFilter.fade) {
-                        someImage in
-                        processedImage = someImage ?? UIImage()
-                    }
+            #if DEBUG
+            guard !processedCGImages.isEmpty else {
+                let processedImage = UIImage()
+                cell.update(title: "Test", image: processedImage, description: "Test", likes: 0, views: 0)
+                return cell
             }
+            let processedImage = UIImage(cgImage: processedCGImages[indexPath.row]!)
+            cell.update(title: "Test", image: processedImage, description: "Test", likes: 0, views: 0)
+            return cell
+            #else
+            let data = arrayOfPost[indexPath.row]
+            guard !processedCGImages.isEmpty else {
+                let processedImage = UIImage()
+                cell.update(title: data.title, image: processedImage, description: data.description, likes: data.likes, views: data.views)
+                return cell
+            }
+            let processedImage = UIImage(cgImage: processedCGImages[indexPath.row]!)
             cell.update(title: data.title, image: processedImage, description: data.description, likes: data.likes, views: data.views)
             return cell
+            #endif
         }
     }
 }
-
 
 //MARK: -extension UITableViewDelegate
 
@@ -300,11 +343,3 @@ extension ProfileViewController: UITableViewDelegate {
         navigationController?.pushViewController(photosVC, animated: true)
     }
 }
-
-
-
-
-
-
-
-

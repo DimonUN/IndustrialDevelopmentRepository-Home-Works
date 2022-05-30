@@ -30,9 +30,9 @@ class ProfileViewController: UIViewController {
         })
     }
     private func processedImages() {
-        self.processor.processImagesOnThread(sourceImages: secondArrayOfImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .userInteractive) { someImages in
+        self.processor.processImagesOnThread(sourceImages: secondArrayOfImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .userInteractive) { [weak self] someImages in
             someImages.forEach({
-                self.processedCGImages.append($0)
+                self?.processedCGImages.append($0)
             })
 //Время выполнения метода при:
 //  ColorFilter.motionBlur(radius: 20.0),
@@ -59,9 +59,9 @@ class ProfileViewController: UIViewController {
 
     }
     private func processedImages() {
-        self.processor.processImagesOnThread(sourceImages: originalImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .background) { someImages in
+        self.processor.processImagesOnThread(sourceImages: originalImages, filter: ColorFilter.motionBlur(radius: 20.0), qos: .background) { [weak self] someImages in
             someImages.forEach({
-                self.processedCGImages.append($0)
+                self?.processedCGImages.append($0)
             })
 //Время выполнения метода при:
 //  ColorFilter.motionBlur(radius: 20.0),

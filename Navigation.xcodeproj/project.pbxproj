@@ -71,6 +71,7 @@
 				5A0E5193278EADCB006E603B /* LogInViewController.swift */,
 				5A0302852768A42A00FA2D66 /* ProfileHeaderView.swift */,
 				5A0302892768A48500FA2D66 /* ProfileViewController.swift */,
+				5A20370C2848AEEF00CA9F48 /* BruteForceClass.swift */,
 				5AA95D5A27AC22C000A0D22C /* TableViewCells */,
 				5AFB1D2B27A90E5300068D0B /* PhotogridCollectionViewCell.swift */,
 				5A042F1627AD368400C4BFB7 /* PhotosViewController.swift */,
@@ -101,7 +102,6 @@
 		5A140E2C2754C0EE002327CE /* Navigation */ = {
 			isa = PBXGroup;
 			children = (
-				5A20370C2848AEEF00CA9F48 /* BruteForceClass.swift */,
 				5A0302842768A3DA00FA2D66 /* Profile */,
 				5A9FCD92278C1817001D2F82 /* Feed */,
 				5A140E2D2754C0EE002327CE /* AppDelegate.swift */,

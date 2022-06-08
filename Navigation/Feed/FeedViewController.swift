@@ -40,11 +40,13 @@ final class FeedViewController: UIViewController {
 
     @objc func buttonAction(sender: UIButton) {
         if timer == nil {
+            invalidateButton.setTitle("Invalidate", for: .normal)
             createTimer()
             print("start timer")
         } else {
             timer?.invalidate()
             timer = nil
+            invalidateButton.setTitle("Continue", for: .normal)
             print("invalidate")
         }
     }
@@ -71,7 +73,7 @@ final class FeedViewController: UIViewController {
         let invalidateButton = UIButton(type: .system)
         invalidateButton.toAutoLayout()
         invalidateButton.backgroundColor = .systemBlue
-        invalidateButton.setTitle("Invalidate", for: .normal)
+        invalidateButton.setTitle("Start", for: .normal)
         invalidateButton.setTitleColor(.white, for: .normal)
         invalidateButton.layer.cornerRadius = 20.0
         invalidateButton.addTarget(self, action: #selector(buttonAction), for: .touchUpInside)
@@ -99,6 +101,7 @@ final class FeedViewController: UIViewController {
         super.viewDidLoad()
         setupUI()
         setupConstraints()
-        createTimer()
+//       Изначальный вариант предполагает, что таймер включается сам.
+//        createTimer()
     }
 }

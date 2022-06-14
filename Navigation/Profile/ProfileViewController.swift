@@ -4,25 +4,25 @@ final class ProfileViewController: UIViewController {
 
     //MARK: -Setting properties
     
-    fileprivate enum CellReuseIdentifiers: String {
+    private enum CellReuseIdentifiers: String {
         case header
         case photos
         case posts
     }
     
-    fileprivate var recognizer: UITapGestureRecognizer = {
+    private var recognizer: UITapGestureRecognizer = {
         let recognizer = UITapGestureRecognizer()
         return recognizer
     }()
     
-    fileprivate var animator: UIViewPropertyAnimator = {
+    private var animator: UIViewPropertyAnimator = {
         let animator = UIViewPropertyAnimator()
         return animator
     }()
-    
-    fileprivate lazy var arrayOfPost: [Post] = PostProvider.get()
 
-    fileprivate enum NumbersOfCellsInTableView {
+    private var arrayOfPost: [Post]? = []
+
+    private enum NumbersOfCellsInTableView {
         static let zeroSection = 1
         static let firstSection = 1
     }
@@ -54,9 +54,19 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        try? loadPosts()
         setupUI()
         setupHeaderTableView()
         setupLayout()
+    }
+
+//    MARK: - Home Work 3)
+    private func loadPosts() throws {
+        if let array = PostProvider.get() {
+            arrayOfPost = array
+        } else {
+            throw PostError.dataError
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -238,7 +248,11 @@ extension ProfileViewController: UITableViewDataSource {
         case 1:
             n = NumbersOfCellsInTableView.firstSection
         default:
-            n = arrayOfPost.count
+            if let number = arrayOfPost?.count {
+                n = number
+            } else {
+                n = 0
+            }
         }
         return n
     }
@@ -250,7 +264,6 @@ extension ProfileViewController: UITableViewDataSource {
                 withIdentifier: CellReuseIdentifiers.header.rawValue,
                 for: indexPath
             ) as! FirstSectionOfTableView
-
             cell.selectionStyle = .none
             return cell
 
@@ -259,7 +272,6 @@ extension ProfileViewController: UITableViewDataSource {
                 withIdentifier: CellReuseIdentifiers.photos.rawValue,
                 for: indexPath
             ) as! PhotosTableViewCell
-
             return cell
             
         default:
@@ -268,15 +280,15 @@ extension ProfileViewController: UITableViewDataSource {
                 for: indexPath
             ) as! PostTableViewCell
 
-            let data = arrayOfPost[indexPath.row]
-            cell.update(
-                title: data.title,
-                image: data.image,
-                description: data.description,
-                likes: data.likes,
-                views: data.views
-            )
-
+            if let data = arrayOfPost?[indexPath.row] {
+                cell.update(
+                    title: data.title,
+                    image: data.image,
+                    description: data.description,
+                    likes: data.likes,
+                    views: data.views
+                )
+            }
             return cell
         }
     }

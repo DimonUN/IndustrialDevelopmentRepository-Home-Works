@@ -11,8 +11,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow()
         
         let tabBarController = UITabBarController()
+
+        let factory = MyLoginFactory()
+        let logInVC = LogInViewController(delegate: factory.createInspector())
         
-        let logInVC = LogInViewController()
         logInVC.tabBarItem = UITabBarItem(title: "Profile", image: .init(systemName: "person.fill"), tag: 0)
         
         let feedVC = FeedViewController()

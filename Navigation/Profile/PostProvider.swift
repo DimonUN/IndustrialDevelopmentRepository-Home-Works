@@ -1,7 +1,15 @@
 import Foundation
+import UIKit
+
+enum PostError: Error {
+    case dataError
+}
 
 struct PostProvider {
-    static func get() -> [Post] {
+    static func get() -> [Post]? {
+        #if DEBUG
+        return nil
+        #else
         return [
             Post(
                 title: "About the dangers of malnutrition",
@@ -57,5 +65,6 @@ struct PostProvider {
                 views: 4123
             )
         ]
+        #endif
     }
 }

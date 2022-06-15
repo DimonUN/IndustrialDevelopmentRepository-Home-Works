@@ -17,8 +17,13 @@ final class ProfileHeaderView: UIView {
         return avatarContentView
     }()
 
+//    MARK: - Home Work 4)
     lazy var avatarImageView: UIImageView = {
-        let avatarImageView = UIImageView(image: UIImage(named: "cat"))
+        let avatarImageView = UIImageView()
+        guard let image = UIImage(named: "cat") else {
+            preconditionFailure("Дальнейшая работа не имеет смысла")
+        }
+        avatarImageView.image = image
         avatarImageView.layer.cornerRadius = 70
         avatarImageView.layer.borderWidth = 3
         avatarImageView.layer.borderColor = UIColor.white.cgColor

@@ -1,9 +1,28 @@
 import UIKit
 
+public enum LoginError: Error {
+    case emptyLogin
+    case emptyPassword
+    case emptyData
+    case wrongLonigOrPassword
+
+}
+
 final class LogInViewController: UIViewController {
     
     @objc func tapGesture(_ gesture: UITapGestureRecognizer) {
         print("Did catch action")
+    }
+
+    var delegate: LoginViewConrollerDelegate?
+
+    init(delegate: LoginViewConrollerDelegate) {
+        self.delegate = delegate
+        super.init(nibName: nil, bundle: nil)
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
 
     //MARK: -Setting properties
@@ -21,104 +40,6 @@ final class LogInViewController: UIViewController {
         contentView.toAutoLayout()
         return contentView
     }()
-
-
-    //    MARK: - Home Work Start
-    private var generatedPassword: String?
-    private var pickupedPassword: String?
-    private lazy var globalQueue = DispatchQueue.global()
-
-    private lazy var pickupButton: UIButton = {
-        let pickupButton = UIButton(type: .system)
-        pickupButton.toAutoLayout()
-        pickupButton.setTitle("Подобрать пароль", for: .normal)
-        pickupButton.setTitleColor(.orange, for: .normal)
-        pickupButton.backgroundColor = .white
-        pickupButton.layer.borderColor = UIColor.orange.cgColor
-        pickupButton.layer.borderWidth = 1.0
-        pickupButton.layer.cornerRadius = 10.0
-        pickupButton.clipsToBounds = true
-        pickupButton.addTarget(
-            self,
-            action: #selector(getPassword(sender:)),
-            for: .touchUpInside
-        )
-
-        return pickupButton
-    }()
-
-    private lazy var activityIndicator: UIActivityIndicatorView = {
-        let activityIndicator = UIActivityIndicatorView(style: .medium)
-        activityIndicator.color = .black
-        activityIndicator.toAutoLayout()
-        return activityIndicator
-    }()
-
-    @objc private func getPassword(sender: UIButton) {
-        self.activityIndicator.startAnimating()
-        doWorkInGroup()
-    }
-
-    private func doWorkInGroup() {
-        let group = DispatchGroup()
-
-//        Группа через WorkItem
-//        group.enter()
-//        let item = DispatchWorkItem(qos: .default, flags: .enforceQoS) {
-//            self.generatePassword()
-//            print("Password is \(self.generatedPassword ?? "not value")")
-//            self.pickupPassword()
-//            group.leave()
-//        }
-//        group.notify(queue: .main) {
-//            self.passwordTextField.text = self.pickupedPassword
-//            self.passwordTextField.isSecureTextEntry = false
-//            self.activityIndicator.stopAnimating()
-//        }
-//        globalQueue.async(execute: item)
-
-//       Группа через Block кода
-        group.enter()
-        func work() {
-            self.generatePassword()
-            print("Password is \(self.generatedPassword ?? "not value")")
-            self.pickupPassword()
-            group.leave()
-        }
-        group.notify(queue: .main) {
-            self.passwordTextField.text = self.pickupedPassword
-            self.passwordTextField.isSecureTextEntry = false
-            self.activityIndicator.stopAnimating()
-        }
-        globalQueue.async {
-            work()
-        }
-    }
-
-    private func generatePassword() {
-        let availableCharactersArray: [String] = String().printable.map { String($0) }
-        let maxPasswordSize = 3
-        func generateRandomString() -> Character {
-            let randomInt = Int.random(in: 0..<availableCharactersArray.count)
-            return Character(availableCharactersArray[randomInt])
-        }
-        var passwordArray: [Character] = []
-        while passwordArray.count < maxPasswordSize {
-            passwordArray.append(generateRandomString())
-        }
-        generatedPassword = String(passwordArray)
-    }
-
-    private func pickupPassword() {
-        let bruteForce = BruteForceClass()
-        let pickupedPassword = bruteForce.bruteForce(
-            passwordToUnlock: generatedPassword ?? ""
-        )
-
-        self.pickupedPassword = pickupedPassword
-    }
-
-    //    MARK: - Home Work End
 
     private lazy var logoContentView: UIView = {
         let logoContentView = UIView()
@@ -235,7 +156,7 @@ final class LogInViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(contentView)
         logoContentView.addSubview(logoImageView)
-        contentView.addSubviews(logoContentView, textFieldsContentView, loginButton, pickupButton, activityIndicator)
+        contentView.addSubviews(logoContentView, textFieldsContentView, loginButton)
         textFieldsContentView.addSubviews(loginTextField, passwordTextField)
         loginButton.addSubview(imageView)
     }
@@ -274,20 +195,11 @@ final class LogInViewController: UIViewController {
             passwordTextField.bottomAnchor.constraint(equalTo: textFieldsContentView.bottomAnchor),
             passwordTextField.heightAnchor.constraint(equalToConstant: 50.0),
 
-
-            activityIndicator.centerYAnchor.constraint(equalTo: passwordTextField.centerYAnchor),
-            activityIndicator.trailingAnchor.constraint(equalTo: passwordTextField.trailingAnchor, constant: -10.0),
-
             loginButton.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16.0),
             loginButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16.0),
             loginButton.topAnchor.constraint(equalTo: textFieldsContentView.bottomAnchor, constant: 16.0),
             loginButton.heightAnchor.constraint(equalToConstant: 50.0),
             loginButton.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -200.0),
-
-            pickupButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 150),
-            pickupButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            pickupButton.widthAnchor.constraint(equalToConstant: 150.0),
-            pickupButton.heightAnchor.constraint(equalToConstant: 50.0),
 
             imageView.leadingAnchor.constraint(equalTo: loginButton.leadingAnchor),
             imageView.trailingAnchor.constraint(equalTo: loginButton.trailingAnchor),
@@ -299,6 +211,9 @@ final class LogInViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.navigationBar.isHidden = true
+
+        loginTextField.text = nil
+        passwordTextField.text = nil
         
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(
@@ -344,37 +259,96 @@ final class LogInViewController: UIViewController {
 
     @objc func holdRelease(sender: UIButton) {
         imageView.alpha = 1.0
+
+
     }
 
     @objc func holdDown(sender: UIButton) {
         guard loginButton.isSelected || loginButton.isHighlighted else { return }
         imageView.alpha = 0.8
 
-        guard passwordTextField.text?.isEmpty == false else { return }
-        if passwordTextField.text == generatedPassword {
-            loginTextField.resignFirstResponder()
-            passwordTextField.resignFirstResponder()
-            let profileVC = ProfileViewController()
-            self.navigationController?.pushViewController(profileVC, animated: true)
-            pickupedPassword = nil
-            passwordTextField.text = nil
-            loginTextField.text = nil
-            passwordTextField.isSecureTextEntry = true
-        } else {
-            let alert = UIAlertController(
-                title: "Внимание!",
-                message: "Введите корректный пароль!",
+        loginTextField.resignFirstResponder()
+        passwordTextField.resignFirstResponder()
+
+        guard delegate != nil else { return }
+
+        let login: Int? = loginTextField.text?.hash
+        let password: Int? = passwordTextField.text?.hash
+
+        
+//        MARK: - Home Work 1)
+        do {
+            let result = try delegate?.verify(login: login, password: password)
+            check(result: result)
+        } catch {
+            errorProcessing(error: error as! LoginError)
+        }
+    }
+
+    private func check(result: Bool?) {
+        let profileViewController = ProfileViewController()
+        self.navigationController?.pushViewController(profileViewController, animated: true)
+        loginTextField.text = nil
+        passwordTextField.text = nil
+    }
+
+    private func errorProcessing(error: LoginError) {
+        switch error {
+        case .emptyLogin:
+            let emptyLoginAlert = UIAlertController(
+                title: nil,
+                message: "Введите логин",
                 preferredStyle: .alert
             )
-
             let okAction = UIAlertAction(
                 title: "Ok",
                 style: .default,
                 handler: nil
             )
+            emptyLoginAlert.addAction(okAction)
+            present(emptyLoginAlert, animated: true, completion: nil)
 
-            alert.addAction(okAction)
-            present(alert, animated: true, completion: nil)
+        case .emptyPassword:
+            let emptyPasswordAlert = UIAlertController(
+                title: nil,
+                message: "Введите пароль",
+                preferredStyle: .alert
+            )
+             let okAction = UIAlertAction(
+                title: "Ok",
+                style: .default,
+                handler: nil
+             )
+            emptyPasswordAlert.addAction(okAction)
+            present(emptyPasswordAlert, animated: true, completion: nil)
+
+        case .wrongLonigOrPassword:
+            let emptyDataAlert = UIAlertController(
+                title: nil,
+                message: "Неверный логин или пароль",
+                preferredStyle: .alert
+            )
+            let okAction = UIAlertAction(
+                title: "Ok",
+                style: .default,
+                handler: nil
+            )
+            emptyDataAlert.addAction(okAction)
+            present(emptyDataAlert, animated: true, completion: nil)
+
+        case .emptyData:
+            let wrongLonigOrPasswordAlert = UIAlertController(
+                title: nil,
+                message: "Введите логин и пароль",
+                preferredStyle: .alert
+            )
+            let okAction = UIAlertAction(
+                title: "Ok",
+                style: .default,
+                handler: nil
+            )
+            wrongLonigOrPasswordAlert.addAction(okAction)
+            present(wrongLonigOrPasswordAlert, animated: true, completion: nil)
         }
     }
 }

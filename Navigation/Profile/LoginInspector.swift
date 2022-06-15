@@ -8,20 +8,20 @@
 import Foundation
 
 protocol LoginViewConrollerDelegate: AnyObject {
-    func verificatoin(lgn: Int?, pswd: Int?) throws -> Bool
+    func verify(login: Int?, password: Int?) throws -> Bool
 }
 
 class LoginInspector: LoginViewConrollerDelegate {
     let data = Cheker.shared.getData()
 
-    func verificatoin(lgn: Int?, pswd: Int?) throws -> Bool {
-        if data.0 == lgn, data.1 == pswd {
+    func verify(login: Int?, password: Int?) throws -> Bool {
+        if data.0 == login, data.1 == password {
             return true
-        } else if lgn == 0, pswd == 0 {
+        } else if login == 0, password == 0 {
             throw LoginError.emptyData
-        } else if lgn == 0 {
+        } else if login == 0 {
             throw LoginError.emptyLogin
-        } else if pswd == 0 {
+        } else if password == 0 {
             throw LoginError.emptyPassword
         } else {
             throw LoginError.wrongLonigOrPassword

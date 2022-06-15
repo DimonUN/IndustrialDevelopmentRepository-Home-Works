@@ -278,7 +278,7 @@ final class LogInViewController: UIViewController {
         
 //        MARK: - Home Work 1)
         do {
-            let result = try delegate?.verificatoin(lgn: login, pswd: password)
+            let result = try delegate?.verify(login: login, password: password)
             check(result: result)
         } catch {
             errorProcessing(error: error as! LoginError)

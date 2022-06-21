@@ -16,7 +16,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         logInVC.tabBarItem = UITabBarItem(title: "Profile", image: .init(systemName: "person.fill"), tag: 0)
         
         let feedVC = FeedViewController()
-        feedVC.tabBarItem = UITabBarItem(title: "Feed", image: .init(systemName: "house.fill"), tag: 1)
         
         let navigationAppearance = UINavigationBarAppearance()
         navigationAppearance.backgroundColor = .systemGray6
